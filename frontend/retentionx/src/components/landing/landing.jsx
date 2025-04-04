@@ -11,9 +11,17 @@ export default function LandingPage() {
       {/* Navbar */}
       <Navbar className="navbar" >
         <Container>
-          <Navbar.Brand>
+          {/* <Navbar.Brand>
           <div className="element logo"></div>
-          </Navbar.Brand>
+          </Navbar.Brand> */}
+          <Navbar.Brand className="brand-container">
+            <a href="/" className="brand-link">
+              <img src=".\images\logo copy.png" className="logo-image" />
+              <div className="brand-text">RetentionX</div>
+            </a>
+            </Navbar.Brand>
+
+
           <Nav className="ms-auto">
             <Button href="/Dashboard" type="button" id="navbtn" className="btn btn-outline-secondary">
               Dashboard

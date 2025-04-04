@@ -13,6 +13,35 @@
   display: none; /* Hides scrollbar in Chrome, Safari */
 }
 
+.brand-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+  position: absolute;
+  left: 20px;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none; /* Removes underline */
+}
+
+.logo-image {
+  width: 60px; /* Adjust size as needed */
+  height: auto;
+}
+
+.brand-text {
+  font-size: 30px;
+  font-weight: 600;
+  color: white;
+}
+
+.brand-link:hover .brand-text {
+  color: #ccc; /* Lighter color on hover */
+}
+
 /* Navbar Customization */
 .navbar {
   position: fixed; /* Sticks navbar to the top */

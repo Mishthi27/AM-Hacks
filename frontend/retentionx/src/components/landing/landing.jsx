@@ -13,7 +13,6 @@ export default function LandingPage() {
         <Container>
           <Navbar.Brand>
           <div className="element logo"></div>
-            {/* <div className="element-logo"> MindVault</div> */}
           </Navbar.Brand>
           <Nav className="ms-auto">
             <Button href="/Dashboard" type="button" id="navbtn" className="btn btn-outline-secondary">

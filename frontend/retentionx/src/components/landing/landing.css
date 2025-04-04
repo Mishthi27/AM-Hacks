@@ -13,6 +13,35 @@
   display: none; /* Hides scrollbar in Chrome, Safari */
 }
 
+.brand-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+  position: absolute;
+  left: 20px;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none; /* Removes underline */
+}
+
+.logo-image {
+  width: 60px; /* Adjust size as needed */
+  height: auto;
+}
+
+.brand-text {
+  font-size: 30px;
+  font-weight: 600;
+  color: white;
+}
+
+.brand-link:hover .brand-text {
+  color: #ccc; /* Lighter color on hover */
+}
+
 /* Navbar Customization */
 .navbar {
   position: fixed; /* Sticks navbar to the top */
@@ -44,6 +73,49 @@
   border-radius: 10px;
 } */
 
+/* Floating 3D Icons */
+.floating-icon { 
+  position: absolute;
+  width: 130px;
+  filter: drop-shadow(0px 0px 10px #007bff) drop-shadow(0px 5px 0px #ff416c)
+}
+
+.star {
+  top: 20%;
+  left: 10%;
+  animation: float 6s infinite ease-in-out;
+}
+
+.bookmark {
+  top: 25%;
+  right: 15%;
+  animation: float 5s infinite ease-in-out;
+}
+
+.calender {
+  bottom: 5%;
+  left: 12%;
+  animation: float 7s infinite ease-in-out;
+}
+
+.copy {
+  bottom: 10%;
+  right: 10%;
+  animation: float 6s infinite ease-in-out;
+}
+
+/* Floating Animation */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
 /* Hero Section */
 .hero-section {
   flex: 1;
@@ -69,18 +141,6 @@
   font-size: 1.2rem;
   max-width: 500px;
   margin: 10px 0 20px;
-}
-.element.logo {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  width: 400px; 
-  /* height: auto; */
-  background: url(./MemoBoost.png);
-  background-size: 60%;
-  background-repeat: no-repeat;
-  vertical-align: middle;
-  cursor: pointer;
 }
 .element-title {
   position: absolute;

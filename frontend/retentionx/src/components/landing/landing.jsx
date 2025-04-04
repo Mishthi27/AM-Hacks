@@ -11,10 +11,17 @@ export default function LandingPage() {
       {/* Navbar */}
       <Navbar className="navbar" >
         <Container>
-          <Navbar.Brand>
+          {/* <Navbar.Brand>
           <div className="element logo"></div>
-            {/* <div className="element-logo"> MindVault</div> */}
-          </Navbar.Brand>
+          </Navbar.Brand> */}
+          <Navbar.Brand className="brand-container">
+            <a href="/" className="brand-link">
+              <img src=".\images\logo copy.png" className="logo-image" />
+              <div className="brand-text">RetentionX</div>
+            </a>
+            </Navbar.Brand>
+
+
           <Nav className="ms-auto">
             <Button href="/Dashboard" type="button" id="navbtn" className="btn btn-outline-secondary">
               Dashboard
@@ -29,6 +36,12 @@ export default function LandingPage() {
         </Container>
       </Navbar>
 
+      {/* Floating Icons */}
+      <img src={process.env.PUBLIC_URL + "/images/icons/star.png"} className="floating-icon star" alt="star" />
+      <img src={process.env.PUBLIC_URL + "/images/icons/bookmark.png"} className="floating-icon bookmark" alt="star" />
+      <img src={process.env.PUBLIC_URL + "/images/icons/calender.png"} className="floating-icon calender" alt="star" />
+      <img src={process.env.PUBLIC_URL + "/images/icons/copy.png"} className="floating-icon copy" alt="star" />
+      
       {/* Hero Section */}
       <Container className="hero-section text-center">
         <h1 className="hero-title">
@@ -55,7 +68,7 @@ export default function LandingPage() {
           <div>Start setting the curve with the most accurate AI.</div>
         </p>
         <Button className="student-btn" href="/login">
-          <div>Use MemoBoost for free</div>
+          <div>Use RetentionX for free</div>
         </Button>
         </div>
       </Container>

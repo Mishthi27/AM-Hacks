@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LandingPage from "./components/landing/landing";
-// import LoginPage from "./components/signup/login"; 
+import LoginPage from "./components/signup/login"; 
 // import Dashboard from "./components/dashboard/Dashboard";
 // import FlashcardList from "./components/flashcard/flashcardlist";
 // import Quiz from "./components/quiz/Quiz";
@@ -16,15 +16,15 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* <Route path="/login" element={<LoginPage />} /> */}
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<LandingPage />} />
-        {/* <Route path="/Dashboard" element={<Dashboard/>}/>
-        <Route path="/flashcardlist" element={<FlashcardList />} />
-        <Route path="/quiz" element={<Quiz />} />
-        <Route path="/progress" element={<Progress/>}/>
-        <Route path="/pomodoroTimer" element={<PomodoroTimer/>}/>
-        <Route path="/uploadNotes" element={<UploadNotes/>} />
-        <Route path="/reviseNotes" element={<RevisedNotes/>} /> */}
+        {/* <Route path="/Dashboard" element={<Dashboard/>}/> */}
+        {/* <Route path="/flashcardlist" element={<FlashcardList />} /> */}
+        {/* <Route path="/quiz" element={<Quiz />} /> */}
+        {/* <Route path="/progress" element={<Progress/>}/> */}
+        {/* <Route path="/pomodoroTimer" element={<PomodoroTimer/>}/> */}
+        {/* <Route path="/uploadNotes" element={<UploadNotes/>} /> */}
+        {/* <Route path="/reviseNotes" element={<RevisedNotes/>} /> */}
 
       </Routes>
     </Router>

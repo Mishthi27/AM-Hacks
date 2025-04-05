@@ -69,76 +69,90 @@ import { gapi } from "gapi-script";
 
 const CLIENT_ID = "619361945309-o0gmmbdh9rh0dvebejkiu7b3q6lnpo8j.apps.googleusercontent.com";
 const API_KEY = "AIzaSyCpo6YUsvF5iiTiVg_BDRChzWQRlmukpPk";
+const DISCOVERY_DOC = "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest";
 const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
 
 const GoogleCalendarAuth = () => {
-  const [events, setEvents] = useState([]);
+  const [isSignedIn, setIsSignedIn] = useState(false);
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
-    const initClient = () => {
+    const loadGapi = () => {
+      const script = document.createElement("script");
+      script.src = "https://apis.google.com/js/api.js";
+      script.async = true;
+      script.defer = true;
+  
+      script.onload = () => {
+        gapi.load("client:auth2", () => {
+          gapi.client
+            .init({
+              apiKey: API_KEY,
+              clientId: CLIENT_ID,
+              discoveryDocs: [DISCOVERY_DOC],
+              scope: SCOPES,
+            })
+            .then(() => {
+              const auth = gapi.auth2.getAuthInstance();
+              if (auth.isSignedIn.get()) {
+                const profile = auth.currentUser.get().getBasicProfile();
+                setUserName(profile.getName());
+                setIsSignedIn(true);
+              }
+            })
+            .catch((err) => console.error("GAPI Init error", err));
+        });
+      };
+  
+      document.body.appendChild(script);
+    };
+  
+    loadGapi();
+  }, []);
+  
+  useEffect(() => {
+    const start = () => {
       gapi.client
         .init({
           apiKey: API_KEY,
           clientId: CLIENT_ID,
-          discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
+          discoveryDocs: [DISCOVERY_DOC],
           scope: SCOPES,
         })
         .then(() => {
-          console.log("GAPI initialized");
+          const auth = gapi.auth2.getAuthInstance();
+          if (auth.isSignedIn.get()) {
+            const user = auth.currentUser.get().getBasicProfile();
+            setIsSignedIn(true);
+            setUserName(user.getName());
+          }
         })
-        .catch((e) => console.error("GAPI Init error", e));
+        .catch((err) => {
+          console.error("GAPI Init error", err);
+        });
     };
 
-    gapi.load("client:auth2", initClient);
+    gapi.load("client:auth2", start);
   }, []);
 
   const handleLogin = () => {
-    const authInstance = gapi.auth2.getAuthInstance();
-    if (authInstance) {
-      authInstance.signIn().then((user) => {
+    const auth = gapi.auth2.getAuthInstance();
+    if (auth) {
+      auth.signIn().then((user) => {
         const profile = user.getBasicProfile();
         setUserName(profile.getName());
-
-        // Fetch events after login
-        gapi.client.calendar.events
-          .list({
-            calendarId: "primary",
-            timeMin: new Date().toISOString(),
-            showDeleted: false,
-            singleEvents: true,
-            maxResults: 10,
-            orderBy: "startTime",
-          })
-          .then((response) => {
-            const items = response.result.items;
-            setEvents(items);
-          });
+        setIsSignedIn(true);
+        console.log("Logged in as:", profile.getName());
       });
+    } else {
+      console.error("Auth instance not initialized");
     }
   };
 
   return (
-    <div style={{ padding: "1rem" }}>
+    <div>
       <button onClick={handleLogin}>Connect to Google Calendar</button>
-
-      {userName && <h3>Welcome, {userName}</h3>}
-
-      {events.length > 0 ? (
-        <div>
-          <h4>Upcoming Events:</h4>
-          <ul>
-            {events.map((event) => (
-              <li key={event.id}>
-                <strong>{event.summary}</strong><br />
-                {event.start.dateTime || event.start.date}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : userName ? (
-        <p>No upcoming events found.</p>
-      ) : null}
+      {isSignedIn && <p>Welcome, {userName}</p>}
     </div>
   );
 };

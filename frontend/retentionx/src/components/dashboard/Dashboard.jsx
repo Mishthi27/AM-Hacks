@@ -189,8 +189,6 @@ const chartData = useMemo(() => ({
           </Card>
 
           <Card className="mt-3 p-3">
-  {/* <GoogleCalendarEmbed /> */}
-  {/* OR for interactive API: */}
   <GoogleCalendarAuth />
 </Card>
 

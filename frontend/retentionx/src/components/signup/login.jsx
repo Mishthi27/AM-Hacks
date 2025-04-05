@@ -19,17 +19,17 @@ export default function LoginPage() {
     }
   }, []);
 
-  // const handleLogin = (e) => {
-  //   e.preventDefault();
-  //   // Simple check for this example, you can add API calls for actual authentication
-  //   if (email === "Advika_Singhal" && password === "password") {
-  //     // Save the username or email to localStorage
-  //     localStorage.setItem("username", email);
-  //     navigate("/dashboard"); // Redirect to Dashboard after successful login
-  //   } else {
-  //     alert("Invalid credentials");
-  //   }
-  // };
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // Simple check for this example, you can add API calls for actual authentication
+    if (email === "Advika_Singhal" && password === "password") {
+      // Save the username or email to localStorage
+      localStorage.setItem("username", email);
+      navigate("/dashboard"); // Redirect to Dashboard after successful login
+    } else {
+      alert("Invalid credentials");
+    }
+  };
 
   return (
     <div className="login-page">

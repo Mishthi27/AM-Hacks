@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Button, ListGroup, ListGroupItem } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Calendar from "react-calendar";
+import GoogleCalendarAuth from "../elements/calender/calender";
 import {
   Chart as ChartJS,
   BarElement,
@@ -186,6 +187,13 @@ const chartData = useMemo(() => ({
               <Calendar className="custom-calendar" />
             </div>
           </Card>
+
+          <Card className="mt-3 p-3">
+  {/* <GoogleCalendarEmbed /> */}
+  {/* OR for interactive API: */}
+  <GoogleCalendarAuth />
+</Card>
+
 
           {/* Reminders */}
           <Card className="mt-3 p-3">

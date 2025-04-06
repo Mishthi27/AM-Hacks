@@ -159,223 +159,223 @@
 
 // export default GoogleCalendarAuth;
 
-// import React, { useEffect, useState } from "react";
-// import { gapi } from "gapi-script";
-
-// const CLIENT_ID = "619361945309-22fcuobqpnt8du17hk2jfcgjr9ibde8q.apps.googleusercontent.com";
-// const API_KEY = "AIzaSyBaNltMTtnX-hZZZF8KPdHqfYku17mgtmY";
-// const DISCOVERY_DOC = "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest";
-// const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
-
-// const GoogleCalendarAuth = () => {
-//   const [isSignedIn, setIsSignedIn] = useState(false);
-//   const [userName, setUserName] = useState("");
-//   const [events, setEvents] = useState([]);
-
-//   useEffect(() => {
-//     const loadGapi = () => {
-//       const script = document.createElement("script");
-//       script.src = "https://apis.google.com/js/api.js";
-//       script.async = true;
-//       script.defer = true;
-
-//       script.onload = () => {
-//         gapi.load("client:auth2", () => {
-//           gapi.client
-//             .init({
-//               apiKey: API_KEY,
-//               clientId: CLIENT_ID,
-//               discoveryDocs: [DISCOVERY_DOC],
-//               scope: SCOPES,
-//             })
-//             .then(() => {
-//               const auth = gapi.auth2.getAuthInstance();
-//               if (auth.isSignedIn.get()) {
-//                 const profile = auth.currentUser.get().getBasicProfile();
-//                 setUserName(profile.getName());
-//                 setIsSignedIn(true);
-//                 fetchEvents(); // Fetch events on load if already signed in
-//               }
-//             })
-//             .catch((err) => console.error("GAPI Init error", err));
-//         });
-//       };
-
-//       document.body.appendChild(script);
-//     };
-
-//     loadGapi();
-//   }, []);
-
-//   const handleLogin = () => {
-//     const auth = gapi.auth2.getAuthInstance();
-//     if (auth) {
-//       auth.signIn().then((user) => {
-//         const profile = user.getBasicProfile();
-//         setUserName(profile.getName());
-//         setIsSignedIn(true);
-//         fetchEvents(); // Fetch events after login
-//       });
-//     } else {
-//       console.error("Auth instance not initialized");
-//     }
-//   };
-
-//   const fetchEvents = () => {
-//     gapi.client.calendar.events
-//       .list({
-//         calendarId: "primary",
-//         timeMin: new Date().toISOString(),
-//         showDeleted: false,
-//         singleEvents: true,
-//         maxResults: 5,
-//         orderBy: "startTime",
-//       })
-//       .then((response) => {
-//         setEvents(response.result.items);
-//       })
-//       .catch((error) => {
-//         console.error("Error fetching events", error);
-//       });
-//   };
-
-//   return (
-//     <div style={{ padding: "1rem" }}>
-//       <button onClick={handleLogin}>Connect to Google Calendar</button>
-//       {isSignedIn && (
-//         <>
-//           <p>Welcome, {userName}</p>
-//           <h4>Upcoming Events Scheduled:</h4>
-//           {events.length > 0 ? (
-//             <ul>
-//               {events.map((event) => (
-//                 <li key={event.id}>
-//                   <strong>{event.summary}</strong><br />
-//                   {event.start.dateTime || event.start.date}
-//                 </li>
-//               ))}
-//             </ul>
-//           ) : (
-//             <p>No upcoming events found.</p>
-//           )}
-//         </>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default GoogleCalendarAuth;
-
 import React, { useEffect, useState } from "react";
+import { gapi } from "gapi-script";
 
 const CLIENT_ID = "619361945309-22fcuobqpnt8du17hk2jfcgjr9ibde8q.apps.googleusercontent.com";
 const API_KEY = "AIzaSyBaNltMTtnX-hZZZF8KPdHqfYku17mgtmY";
+const DISCOVERY_DOC = "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest";
+const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
 
-const DISCOVERY_DOCS = [
-  "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
-];
-const SCOPES =
-  "https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/userinfo.profile";
-
-function App() {
+const GoogleCalendarAuth = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [userName, setUserName] = useState("");
   const [events, setEvents] = useState([]);
 
-  const loadGapi = () => {
-    const script = document.createElement("script");
-    script.src = "https://apis.google.com/js/api.js";
-    script.onload = initClient;
-    document.body.appendChild(script);
-  };
+  useEffect(() => {
+    const loadGapi = () => {
+      const script = document.createElement("script");
+      script.src = "https://apis.google.com/js/api.js";
+      script.async = true;
+      script.defer = true;
 
-  const initClient = () => {
-    window.gapi.load("client:auth2", async () => {
-      await window.gapi.client.init({
-        apiKey: API_KEY,
-        clientId: CLIENT_ID,
-        discoveryDocs: DISCOVERY_DOCS,
-        scope: SCOPES,
+      script.onload = () => {
+        gapi.load("client:auth2", () => {
+          gapi.client
+            .init({
+              apiKey: API_KEY,
+              clientId: CLIENT_ID,
+              discoveryDocs: [DISCOVERY_DOC],
+              scope: SCOPES,
+            })
+            .then(() => {
+              const auth = gapi.auth2.getAuthInstance();
+              if (auth.isSignedIn.get()) {
+                const profile = auth.currentUser.get().getBasicProfile();
+                setUserName(profile.getName());
+                setIsSignedIn(true);
+                fetchEvents(); // Fetch events on load if already signed in
+              }
+            })
+            .catch((err) => console.error("GAPI Init error", err));
+        });
+      };
+
+      document.body.appendChild(script);
+    };
+
+    loadGapi();
+  }, []);
+
+  const handleLogin = () => {
+    const auth = gapi.auth2.getAuthInstance();
+    if (auth) {
+      auth.signIn().then((user) => {
+        const profile = user.getBasicProfile();
+        setUserName(profile.getName());
+        setIsSignedIn(true);
+        fetchEvents(); // Fetch events after login
       });
-
-      window.gapi.client.load("oauth2", "v2");
-
-      const authInstance = window.gapi.auth2.getAuthInstance();
-      authInstance.isSignedIn.listen(updateSigninStatus);
-      updateSigninStatus(authInstance.isSignedIn.get());
-    });
-  };
-
-  const updateSigninStatus = async (isSignedIn) => {
-    setIsSignedIn(isSignedIn);
-    if (isSignedIn) {
-      try {
-        const userInfo = await window.gapi.client.oauth2.userinfo.get();
-        setUserName(userInfo.result.name);
-        fetchEvents();
-      } catch (err) {
-        console.error("Error getting user info:", err);
-      }
     } else {
-      setUserName("");
-      setEvents([]);
+      console.error("Auth instance not initialized");
     }
   };
 
-  const fetchEvents = async () => {
-    try {
-      const response = await window.gapi.client.calendar.events.list({
+  const fetchEvents = () => {
+    gapi.client.calendar.events
+      .list({
         calendarId: "primary",
         timeMin: new Date().toISOString(),
         showDeleted: false,
         singleEvents: true,
-        maxResults: 10,
+        maxResults: 5,
         orderBy: "startTime",
+      })
+      .then((response) => {
+        setEvents(response.result.items);
+      })
+      .catch((error) => {
+        console.error("Error fetching events", error);
       });
-
-      setEvents(response.result.items);
-    } catch (error) {
-      console.error("Error fetching events", error);
-    }
   };
-
-  const handleAuthClick = () => {
-    window.gapi.auth2.getAuthInstance().signIn();
-  };
-
-  const handleSignOutClick = () => {
-    window.gapi.auth2.getAuthInstance().signOut();
-  };
-
-  useEffect(() => {
-    loadGapi();
-  }, []);
 
   return (
-    <div style={{ padding: "2rem", fontFamily: "Arial" }}>
-      {!isSignedIn ? (
-        <button onClick={handleAuthClick}>Connect to Google Calendar</button>
-      ) : (
-        <div>
+    <div style={{ padding: "1rem" }}>
+      <button onClick={handleLogin}>Connect to Google Calendar</button>
+      {isSignedIn && (
+        <>
           <p>Welcome, {userName}</p>
-          <button onClick={handleSignOutClick}>Sign out</button>
-          <h2>Your Events:</h2>
-          <ul>
-            {events.length > 0 ? (
-              events.map((event) => (
+          <h4>Upcoming Events Scheduled:</h4>
+          {events.length > 0 ? (
+            <ul>
+              {events.map((event) => (
                 <li key={event.id}>
-                  <strong>{event.summary}</strong> —{" "}
+                  <strong>{event.summary}</strong><br />
                   {event.start.dateTime || event.start.date}
                 </li>
-              ))
-            ) : (
-              <p>No upcoming events.</p>
-            )}
-          </ul>
-        </div>
+              ))}
+            </ul>
+          ) : (
+            <p>No upcoming events found.</p>
+          )}
+        </>
       )}
     </div>
   );
-}
+};
 
-export default App;
+export default GoogleCalendarAuth;
+
+// import React, { useEffect, useState } from "react";
+
+// const CLIENT_ID = "619361945309-22fcuobqpnt8du17hk2jfcgjr9ibde8q.apps.googleusercontent.com";
+// const API_KEY = "AIzaSyBaNltMTtnX-hZZZF8KPdHqfYku17mgtmY";
+
+// const DISCOVERY_DOCS = [
+//   "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
+// ];
+// const SCOPES =
+//   "https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/userinfo.profile";
+
+// function App() {
+//   const [isSignedIn, setIsSignedIn] = useState(false);
+//   const [userName, setUserName] = useState("");
+//   const [events, setEvents] = useState([]);
+
+//   const loadGapi = () => {
+//     const script = document.createElement("script");
+//     script.src = "https://apis.google.com/js/api.js";
+//     script.onload = initClient;
+//     document.body.appendChild(script);
+//   };
+
+//   const initClient = () => {
+//     window.gapi.load("client:auth2", async () => {
+//       await window.gapi.client.init({
+//         apiKey: API_KEY,
+//         clientId: CLIENT_ID,
+//         discoveryDocs: DISCOVERY_DOCS,
+//         scope: SCOPES,
+//       });
+
+//       window.gapi.client.load("oauth2", "v2");
+
+//       const authInstance = window.gapi.auth2.getAuthInstance();
+//       authInstance.isSignedIn.listen(updateSigninStatus);
+//       updateSigninStatus(authInstance.isSignedIn.get());
+//     });
+//   };
+
+//   const updateSigninStatus = async (isSignedIn) => {
+//     setIsSignedIn(isSignedIn);
+//     if (isSignedIn) {
+//       try {
+//         const userInfo = await window.gapi.client.oauth2.userinfo.get();
+//         setUserName(userInfo.result.name);
+//         fetchEvents();
+//       } catch (err) {
+//         console.error("Error getting user info:", err);
+//       }
+//     } else {
+//       setUserName("");
+//       setEvents([]);
+//     }
+//   };
+
+//   const fetchEvents = async () => {
+//     try {
+//       const response = await window.gapi.client.calendar.events.list({
+//         calendarId: "primary",
+//         timeMin: new Date().toISOString(),
+//         showDeleted: false,
+//         singleEvents: true,
+//         maxResults: 10,
+//         orderBy: "startTime",
+//       });
+
+//       setEvents(response.result.items);
+//     } catch (error) {
+//       console.error("Error fetching events", error);
+//     }
+//   };
+
+//   const handleAuthClick = () => {
+//     window.gapi.auth2.getAuthInstance().signIn();
+//   };
+
+//   const handleSignOutClick = () => {
+//     window.gapi.auth2.getAuthInstance().signOut();
+//   };
+
+//   useEffect(() => {
+//     loadGapi();
+//   }, []);
+
+//   return (
+//     <div style={{ padding: "2rem", fontFamily: "Arial" }}>
+//       {!isSignedIn ? (
+//         <button onClick={handleAuthClick}>Connect to Google Calendar</button>
+//       ) : (
+//         <div>
+//           <p>Welcome, {userName}</p>
+//           <button onClick={handleSignOutClick}>Sign out</button>
+//           <h2>Your Events:</h2>
+//           <ul>
+//             {events.length > 0 ? (
+//               events.map((event) => (
+//                 <li key={event.id}>
+//                   <strong>{event.summary}</strong> —{" "}
+//                   {event.start.dateTime || event.start.date}
+//                 </li>
+//               ))
+//             ) : (
+//               <p>No upcoming events.</p>
+//             )}
+//           </ul>
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
+// export default App;

@@ -272,7 +272,7 @@ import { gapi } from "gapi-script";
 const CLIENT_ID = "619361945309-22fcuobqpnt8du17hk2jfcgjr9ibde8q.apps.googleusercontent.com";
 const API_KEY = "AIzaSyBaNltMTtnX-hZZZF8KPdHqfYku17mgtmY";
 const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
-const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
+const SCOPES = "https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/userinfo.profile";
 
 const Calendar = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -289,6 +289,7 @@ const Calendar = () => {
           scope: SCOPES,
         })
         .then(() => {
+          gapi.client.load("oauth2", "v2");
           const authInstance = gapi.auth2.getAuthInstance();
           updateSigninStatus(authInstance.isSignedIn.get());
           authInstance.isSignedIn.listen(updateSigninStatus);
@@ -301,27 +302,26 @@ const Calendar = () => {
     gapi.load("client:auth2", initClient);
   }, []);
 
-  const updateSigninStatus = (isSignedIn) => {
+  const updateSigninStatus = async (isSignedIn) => {
     setIsSignedIn(isSignedIn);
-
+  
     if (isSignedIn) {
-      const authInstance = gapi.auth2.getAuthInstance();
-      const user = authInstance.currentUser.get();
-      const profile = user.getBasicProfile();
-
-      if (profile) {
-        const name = profile.getName();
-        console.log("User signed in as:", name);
+      try {
+        const userInfo = await gapi.client.request({
+          path: "https://www.googleapis.com/oauth2/v2/userinfo",
+        });
+  
+        const name = userInfo.result.name;
         setUserName(name);
         fetchEvents();
-      } else {
-        console.warn("User profile not available");
+      } catch (err) {
+        console.error("Failed to get user info", err);
       }
     } else {
       setUserName("");
       setEvents([]);
     }
-  };
+  };  
 
   const handleAuthClick = () => {
     gapi.auth2.getAuthInstance().signIn();

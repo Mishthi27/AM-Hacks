@@ -244,7 +244,7 @@ const GoogleCalendarAuth = () => {
       <button onClick={handleLogin}>Connect to Google Calendar</button>
       {isSignedIn && (
         <>
-          <h3>Welcome, {userName}</h3>
+          <p>Welcome, {userName}</p>
           <h4>Upcoming Events Scheduled:</h4>
           {events.length > 0 ? (
             <ul>

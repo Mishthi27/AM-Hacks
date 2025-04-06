@@ -41,7 +41,7 @@ export default function LoginPage() {
           </div>
           <div className="elements content">
             <form 
-            // onSubmit={handleLogin}
+            onSubmit={handleLogin}
             >
               <input
                 type="text"

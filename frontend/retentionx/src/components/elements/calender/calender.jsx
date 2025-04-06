@@ -162,8 +162,8 @@
 import React, { useEffect, useState } from "react";
 import { gapi } from "gapi-script";
 
-const CLIENT_ID = "619361945309-dkf1l10tghidbvgamalakm27u1dde964.apps.googleusercontent.com";
-const API_KEY = "AIzaSyCpo6YUsvF5iiTiVg_BDRChzWQRlmukpPk";
+const CLIENT_ID = "619361945309-22fcuobqpnt8du17hk2jfcgjr9ibde8q.apps.googleusercontent.com";
+const API_KEY = "AIzaSyBaNltMTtnX-hZZZF8KPdHqfYku17mgtmY";
 const DISCOVERY_DOC = "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest";
 const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
 

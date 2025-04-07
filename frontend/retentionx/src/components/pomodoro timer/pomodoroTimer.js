@@ -4,7 +4,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./PomodoroStyles.css"; // Custom Dark Theme Styles
 
 const PomodoroTimer = () => {
-  const [time, setTime] = useState(25 * 60); // 25 minutes
+  const [focusDuration, setFocusDuration] = useState(25);
+  const [breakDuration, setBreakDuration] = useState(5);
+  const [time, setTime] = useState(focusDuration * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [session, setSession] = useState("Focus Time");
 
@@ -30,16 +32,25 @@ const PomodoroTimer = () => {
   const handleSessionEnd = () => {
     if (session === "Focus Time") {
       setSession("Break Time");
-      setTime(5 * 60); // 5-minute break
+      setTime(breakDuration * 60);
     } else {
       setSession("Focus Time");
-      setTime(25 * 60); // 25-minute focus
+      setTime(focusDuration * 60);
     }
     setIsRunning(false);
   };
 
   const handleStartStop = () => {
     setIsRunning(!isRunning);
+  };
+
+  const handleSetCustomTimes = () => {
+    setIsRunning(false);
+    if (session === "Focus Time") {
+      setTime(focusDuration * 60);
+    } else {
+      setTime(breakDuration * 60);
+    }
   };
 
   const formatTime = (seconds) => {
@@ -53,7 +64,36 @@ const PomodoroTimer = () => {
       <div className="pomodoro-box">
         <h1 className="session-title">{session}</h1>
         <div className="timer-display">{formatTime(time)}</div>
-        <div className="button-group">
+
+        {/* Custom Time Inputs */}
+        <div className="custom-time-inputs">
+          <div className="form-group">
+            <label>Focus Time (minutes):</label>
+            <input
+              type="number"
+              className="form-control"
+              min="1"
+              value={focusDuration}
+              onChange={(e) => setFocusDuration(Number(e.target.value))}
+            />
+          </div>
+          <div className="form-group mt-2">
+            <label>Break Time (minutes):</label>
+            <input
+              type="number"
+              className="form-control"
+              min="1"
+              value={breakDuration}
+              onChange={(e) => setBreakDuration(Number(e.target.value))}
+            />
+          </div>
+          <button className="btn btn-primary mt-2" onClick={handleSetCustomTimes}>
+            Set Timer
+          </button>
+        </div>
+
+        {/* Control Buttons */}
+        <div className="button-group mt-3">
           <button className="btn btn-success" onClick={handleStartStop}>
             {isRunning ? "Pause" : "Start"}
           </button>

@@ -88,3 +88,11 @@
     margin-top: 10px;
   }
   
+  .custom-time-inputs {
+    margin-top: 20px;
+  }
+  
+  .form-group label {
+    color: #fff; /* assuming dark theme */
+  }
+  

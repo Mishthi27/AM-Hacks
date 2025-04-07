@@ -45,6 +45,14 @@ const chartData = useMemo(() => ({
   ],
 }), [uploadedFiles]); 
 
+const handleDeleteSubject = (subjectToDelete) => {
+  if (window.confirm(`Are you sure you want to delete the subject: ${subjectToDelete}?`)) {
+    const updatedSubjects = subjects.filter(subject => subject !== subjectToDelete);
+    setSubjects(updatedSubjects);
+    localStorage.setItem("subjects", JSON.stringify(updatedSubjects));
+  }
+};
+
   useEffect(() => {
     const storedFiles = JSON.parse(localStorage.getItem("uploadedFiles")) || [];
     const storedLinks = JSON.parse(localStorage.getItem("uploadedLinks")) || [];
@@ -106,7 +114,7 @@ const chartData = useMemo(() => ({
               (subject, idx) => (
                 <Col md={4} key={idx}>
                   <Card
-                    className="text-white mb-3"
+                    className="text-white mb-3 position-relative"
                     style={{
                       backgroundColor:
                         idx === 0
@@ -122,6 +130,20 @@ const chartData = useMemo(() => ({
                       <Card.Title>{subject}</Card.Title>
                       
                     </Card.Body>
+                    {/* Delete button */}
+                    <Button
+                      variant="light"
+  size="sm"
+  id="subject-delete-btn"
+  className="subject-delete-btn position-absolute top-0 end-0 m-2"
+  onClick={(e) => {
+    e.stopPropagation(); // Prevent card click
+    handleDeleteSubject(subject);
+  }}
+>
+  🗑️
+</Button>
+        
                   </Card>
                 </Col>
               )

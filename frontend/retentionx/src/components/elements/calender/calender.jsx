@@ -168,8 +168,7 @@ const DISCOVERY_DOC = "https://www.googleapis.com/discovery/v1/apis/calendar/v3/
 const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
 
 const GoogleCalendarAuth = () => {
-  const [isSignedIn, setIsSignedIn] = useState(false);
-  const [userName, setUserName] = useState("");
+  const [userSignedIn, setUserSignedIn] = useState(false);
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
@@ -189,12 +188,7 @@ const GoogleCalendarAuth = () => {
               scope: SCOPES,
             })
             .then(() => {
-              const auth = gapi.auth2.getAuthInstance();
-              auth.isSignedIn.listen((isSignedIn) => {
-                updateSigninStatus(isSignedIn);
-              });
-  
-              updateSigninStatus(auth.isSignedIn.get());
+              console.log("GAPI initialized");
             })
             .catch((err) => console.error("GAPI Init error", err));
         });
@@ -206,30 +200,16 @@ const GoogleCalendarAuth = () => {
     loadGapi();
   }, []);
 
-  const updateSigninStatus = (isSignedIn) => {
-    setIsSignedIn(isSignedIn);
-    if (isSignedIn) {
-      const profile = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
-      setUserName(profile.getName());
-      fetchEvents();
-    } else {
-      setUserName("");
-      setEvents([]);
-    }
-  };  
-
   const handleLogin = () => {
     const auth = gapi.auth2.getAuthInstance();
-    if (auth) {
-      auth.signIn().then((user) => {
-        const profile = user.getBasicProfile();
-        setUserName(profile.getName());
-        setIsSignedIn(true);
-        fetchEvents(); // Fetch events after login
-      });
-    } else {
-      console.error("Auth instance not initialized");
-    }
+    auth
+      .signIn()
+      .then((user) => {
+        console.log("Signed in");
+        setUserSignedIn(true);
+        fetchEvents();
+      })
+      .catch((err) => console.error("Sign-in error", err));
   };
 
   const fetchEvents = () => {
@@ -244,6 +224,7 @@ const GoogleCalendarAuth = () => {
       })
       .then((response) => {
         setEvents(response.result.items);
+        console.log("Events fetched");
       })
       .catch((error) => {
         console.error("Error fetching events", error);
@@ -251,17 +232,19 @@ const GoogleCalendarAuth = () => {
   };
 
   return (
-    <div style={{ padding: "1rem" }}>
+    <div style={{ padding: "1rem", fontFamily: "sans-serif" }}>
       <button onClick={handleLogin}>Connect to Google Calendar</button>
-      {isSignedIn && (
+
+      {userSignedIn && (
         <>
-          <p>Welcome, {userName}</p>
-          <h4>Upcoming Events Scheduled:</h4>
+          <h2>Welcome, Advika 🎉</h2>
+          <h4>Upcoming Events:</h4>
           {events.length > 0 ? (
             <ul>
               {events.map((event) => (
                 <li key={event.id}>
-                  <strong>{event.summary}</strong><br />
+                  <strong>{event.summary}</strong>
+                  <br />
                   {event.start.dateTime || event.start.date}
                 </li>
               ))}

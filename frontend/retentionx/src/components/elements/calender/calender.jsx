@@ -185,17 +185,16 @@ const GoogleCalendarAuth = () => {
             .init({
               apiKey: API_KEY,
               clientId: CLIENT_ID,
-              discoveryDocs: DISCOVERY_DOC,
+              discoveryDocs: [DISCOVERY_DOC],
               scope: SCOPES,
             })
             .then(() => {
               const auth = gapi.auth2.getAuthInstance();
-              if (auth.isSignedIn.get()) {
-                const profile = auth.currentUser.get().getBasicProfile();
-                setUserName(profile.getName());
-                setIsSignedIn(true);
-                fetchEvents(); // Fetch events on load if already signed in
-              }
+              auth.isSignedIn.listen((isSignedIn) => {
+                updateSigninStatus(isSignedIn);
+              });
+  
+              updateSigninStatus(auth.isSignedIn.get());
             })
             .catch((err) => console.error("GAPI Init error", err));
         });
@@ -206,6 +205,18 @@ const GoogleCalendarAuth = () => {
 
     loadGapi();
   }, []);
+
+  const updateSigninStatus = (isSignedIn) => {
+    setIsSignedIn(isSignedIn);
+    if (isSignedIn) {
+      const profile = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
+      setUserName(profile.getName());
+      fetchEvents();
+    } else {
+      setUserName("");
+      setEvents([]);
+    }
+  };  
 
   const handleLogin = () => {
     const auth = gapi.auth2.getAuthInstance();

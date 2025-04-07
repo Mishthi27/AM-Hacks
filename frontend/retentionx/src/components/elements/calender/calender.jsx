@@ -185,7 +185,7 @@ const GoogleCalendarAuth = () => {
             .init({
               apiKey: API_KEY,
               clientId: CLIENT_ID,
-              discoveryDocs: [DISCOVERY_DOC],
+              discoveryDocs: DISCOVERY_DOC,
               scope: SCOPES,
             })
             .then(() => {

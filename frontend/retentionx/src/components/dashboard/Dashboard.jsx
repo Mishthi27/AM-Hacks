@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Button, ListGroup, ListGroupItem } from "react-bootstrap";
+import { 
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  ListGroup,
+  Modal,
+  Form,
+} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Calendar from "react-calendar";
 import GoogleCalendarAuth from "../elements/calender/calender";
@@ -52,6 +61,33 @@ const handleDeleteSubject = (subjectToDelete) => {
     localStorage.setItem("subjects", JSON.stringify(updatedSubjects));
   }
 };
+
+ //Whatsapp Reminders
+ const [showWhatsAppPopup, setShowWhatsAppPopup] = useState(false);
+ const [phoneNumber, setPhoneNumber] = useState("");
+ const fullPhoneNumber = "+91" + phoneNumber;
+
+ const handleWhatsAppSubscribe = async () => {
+   const response = await fetch("http://localhost:3001/send-whatsapp", {
+     method: "POST",
+     headers: {
+       "Content-Type": "application/json",
+     },
+     body: JSON.stringify({
+       to: fullPhoneNumber,
+       message: "You're now subscribed to reminders from MindVault! 📚",
+     }),
+   });
+
+   const data = await response.json();
+   if (data.success) {
+     alert("You've successfully subscribed to WhatsApp reminders! ✅");
+     setShowWhatsAppPopup(false);
+     localStorage.setItem("whatsappNumber", phoneNumber);
+   } else {
+     alert("Failed to send WhatsApp message. Please try again.");
+   }
+ };
 
   useEffect(() => {
     const storedFiles = JSON.parse(localStorage.getItem("uploadedFiles")) || [];
@@ -222,6 +258,50 @@ const handleDeleteSubject = (subjectToDelete) => {
               <ListGroup.Item>Today's Quiz❓</ListGroup.Item>
               <ListGroup.Item>Revise Flashcards📒</ListGroup.Item>
             </ListGroup>
+
+            <Button
+              variant="success"
+              className="mt-2"
+              onClick={() => setShowWhatsAppPopup(true)}
+            >
+              Receive Reminders on WhatsApp 📲
+            </Button>
+
+            <Modal
+              show={showWhatsAppPopup}
+              onHide={() => setShowWhatsAppPopup(false)}
+            >
+              <Modal.Header closeButton>
+                <Modal.Title>Subscribe to WhatsApp Reminders</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Form>
+                  <Form.Group controlId="whatsappNumber">
+                    <Form.Label>Enter your WhatsApp number</Form.Label>
+                    <Form.Control
+                      type="tel"
+                      maxLength="10"
+                      pattern="[0-9]{10}"
+                      placeholder="Enter your 10-digit mobile number"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                    />
+                  </Form.Group>
+                </Form>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowWhatsAppPopup(false)}
+                >
+                  Cancel
+                </Button>
+                <Button variant="primary" onClick={handleWhatsAppSubscribe}>
+                  Subscribe
+                </Button>
+              </Modal.Footer>
+            </Modal>
+
           </Card>
         </Col>
       </Row>

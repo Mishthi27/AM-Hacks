@@ -9,6 +9,7 @@ import Progress from "./components/progress/progress";
 import PomodoroTimer from "./components/pomodoro timer/pomodoroTimer";
 import UploadNotes from "./components/uploadNotes/uploadNotes";
 import RevisedNotes from "./components/reviseNotes/reviseNotes";
+import Profile from "./components/profile/Profile";
 
 import { useEffect } from "react";
 
@@ -25,6 +26,7 @@ function App() {
         <Route path="/pomodoroTimer" element={<PomodoroTimer/>}/>
         <Route path="/uploadNotes" element={<UploadNotes/>} />
         <Route path="/reviseNotes" element={<RevisedNotes/>} />
+        <Route path="/Profile" element={<Profile/>} />
 
       </Routes>
     </Router>

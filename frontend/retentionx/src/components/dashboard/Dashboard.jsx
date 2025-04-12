@@ -9,13 +9,13 @@ import {
   Modal,
   Form,
 } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Calendar from "react-calendar";
 import GoogleCalendarAuth from "../elements/calender/calender";
 import {
   Chart as ChartJS,
   BarElement,
-  CategoryScale,   // Register this scale
+  CategoryScale,   
   LinearScale,
   Title,
   Tooltip,
@@ -29,6 +29,7 @@ import { useMemo } from "react";
 ChartJS.register(BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const username = localStorage.getItem("username"); // Retrieve username from localStorage
 
   const [selectedSubject, setSelectedSubject] = useState("");
@@ -225,15 +226,15 @@ const handleDeleteSubject = (subjectToDelete) => {
 
         {/* Right Sidebar */}
         <Col md={3} className=" p-4">
-          <div className="profile-container text-center">
-            <div className="profile-image">
+          <div className="dashboard-profile-container text-center">
+            <div className="dashboard-profile-image">
               <img
                 src={`${process.env.PUBLIC_URL}/images/avatar.jpg`}
                 alt="Profile"
               />
             </div>
             <h6>{username}</h6> {/* Display username here */}
-            <Button variant="outline-primary" size="sm">
+            <Button variant="outline-primary" size="sm"  onClick={() => navigate('/profile')}>
               Profile
             </Button>
           </div>

@@ -76,7 +76,7 @@ const handleDeleteSubject = (subjectToDelete) => {
      },
      body: JSON.stringify({
        to: fullPhoneNumber,
-       message: "You're now subscribed to reminders from MindVault! 📚",
+       message: "You're now subscribed to reminders from RetentionX! 📚",
      }),
    });
 

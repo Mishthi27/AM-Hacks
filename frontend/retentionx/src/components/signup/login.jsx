@@ -1,13 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import VanillaTilt from "vanilla-tilt";
 import { useNavigate } from "react-router-dom";
-import { BrowserProvider, Contract, parseUnits } from "ethers";
+import { BrowserProvider, Contract, parseUnits, formatUnits } from "ethers";
 import MEMOXTokenABI from "../../abi/MEMOXToken.json";
 import "./login.css";
 
 export default function LoginPage() {
-  const MEMOX_CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-
   const tiltRef = useRef(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,6 +21,8 @@ export default function LoginPage() {
     }
   }, []);
 
+  const MEMOX_CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+
   const handleLogin = async (e) => {
     e.preventDefault();
     // Simple check for this example, you can add API calls for actual authentication
@@ -37,27 +37,37 @@ export default function LoginPage() {
         }
   
         await window.ethereum.request({ method: "eth_requestAccounts" });
-  
         const provider = new BrowserProvider(window.ethereum);
-        const signer = provider.getSigner();
+        const signer = await provider.getSigner();
         const userAddress = await signer.getAddress();
-  
-        const memoxContract = new Contract(
-          MEMOX_CONTRACT_ADDRESS,
-          MEMOXTokenABI,
-          signer
-        );
-  
-        // Transfer 5 MEMOX tokens to user
-        const tx = await memoxContract.transfer(userAddress, parseUnits("5", 18));
-        await tx.wait();
-  
-        console.log("5 MEMOX credited to:", userAddress);
 
-      navigate("/dashboard"); // Redirect to Dashboard after successful login
+        //call backend
+        const res = await fetch("http://localhost:3001/distribute-memox", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ toAddress: userAddress }),
+        });
+        
+        const data = await res.json();
+        if (data.success) {
+          console.log("MEMOX Credited! Tx:", data.txHash);
+
+          const memoxContract = new Contract(
+            MEMOX_CONTRACT_ADDRESS,
+            MEMOXTokenABI.abi,
+            signer
+          );
+          const updatedBalance = await memoxContract.balanceOf(userAddress);
+          const formattedBalance = formatUnits(updatedBalance, 18);
+          localStorage.setItem("memoxBalance", formattedBalance);
+
+          navigate("/dashboard");
+        } else {
+          alert("Token transfer failed");
+        }        
       }catch (error) {
-        console.error("Token credit failed:", error);
-        alert("Error crediting MEMOX");
+        console.error("Login or token credit failed:", error);
+        alert("Error during login or token distribution.");
       }
     } else {
       alert("Invalid credentials");

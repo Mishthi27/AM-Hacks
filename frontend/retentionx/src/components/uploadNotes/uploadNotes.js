@@ -89,6 +89,17 @@ const UploadPage = () => {
             const generatedFlashcards = flashcardData.flashcards;
             localStorage.setItem("flashcards", JSON.stringify(generatedFlashcards));
             setFlashcards(generatedFlashcards);
+
+            // quiz generation:
+            const generateQuizRes = await fetch("https://devcation.onrender.com/generate-quiz", {
+                method: "POST",
+            });
+            if (!generateQuizRes.ok) throw new Error("Quiz generation failed.");
+    
+            const quizRes = await fetch("https://devcation.onrender.com/get-quiz");
+            const quizData = await quizRes.json();
+            if (!quizRes.ok || !quizData.quiz) throw new Error("Failed to retrieve quiz.");
+            localStorage.setItem("quiz", JSON.stringify(quizData.quiz));
     
             const newFile = { name: selectedFile.name, tag };
             const newFiles = [...uploadedFiles, newFile];

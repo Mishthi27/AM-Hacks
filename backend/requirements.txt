@@ -7,3 +7,7 @@ pymongo
 python-dotenv
 youtube_transcript_api
 nltk
+pytesseract 
+pdf2image 
+pillow
+fitz

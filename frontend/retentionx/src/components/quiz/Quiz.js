@@ -1,17 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import qBank from "./Components/QuestionBank";
+import Sidebar from "../sidebar/sidebar";
 import Score from "./Components/Score";
 import "./Quiz.css";
-import Sidebar from "../sidebar/sidebar";
 
 const Quiz = () => {
-  const [questionBank] = useState(qBank);
+  const [questionBank, setQuestionBank] = useState([]); // Start with empty array
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedOption, setSelectedOption] = useState("");
-  const [selectedDifficulty, setSelectedDifficulty] = useState(null); // Track difficulty
+  const [selectedDifficulty, setSelectedDifficulty] = useState(null);
   const [score, setScore] = useState(0);
   const [quizEnd, setQuizEnd] = useState(false);
+  const [loading, setLoading] = useState(true); // Loading state
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/get-quiz");
+        const data = await response.json();
+        console.log("Fetched questions:", data); // Debugging log
+        setQuestionBank(data.questions || []); // Extracting the array
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching questions:", error);
+        setLoading(false);
+      }
+    };
+  
+    fetchQuestions();
+  }, []);
+  
+  if (loading) {
+    return <h2>Loading questions...</h2>; // Prevents error before data loads
+  }
+
+  if (!questionBank.length) {
+    return <h2>No questions available</h2>; // Handles empty API response
+  }
+
+  // Ensure the current question is valid before accessing properties
+  const currentQ = questionBank[currentQuestion];
+  if (!currentQ) {
+    return <h2>Error: Question not found</h2>; // Prevents crash if index is out of bounds
+  }
 
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
@@ -24,10 +55,10 @@ const Quiz = () => {
   };
 
   const checkAnswer = () => {
-    if (selectedOption === questionBank[currentQuestion].answer) {
+    if (selectedOption.trim().charAt(0) === currentQ.answer.trim()) {
       setScore((prevScore) => prevScore + 1);
     }
-  };
+  };  
 
   const handleNextQuestion = () => {
     if (currentQuestion + 1 < questionBank.length) {
@@ -45,12 +76,11 @@ const Quiz = () => {
   return (
     <div className="quiz-container d-flex flex-column align-items-center justify-content-center">
       <Sidebar />
-      {/* <h1 className="app-title">QUIZ</h1> */}
       {!quizEnd ? (
         <div className="question-container">
-          <h2 className="question-text">{questionBank[currentQuestion].question}</h2>
+          <h2 className="question-text">{currentQ.question}</h2>
           <form onSubmit={handleFormSubmit} className="quiz-options">
-            {questionBank[currentQuestion].options.map((option, index) => (
+            {currentQ.options.map((option, index) => (
               <label key={index} className="quiz-option">
                 <input
                   type="radio"
@@ -62,27 +92,14 @@ const Quiz = () => {
                 {option}
               </label>
             ))}
-            {/* Difficulty Level Buttons */}
             <div className="difficulty-buttons">
-              <button
-                type="button"
-                className={`flag-button easy ${selectedDifficulty === "easy" ? "selected" : ""}`}
-                onClick={() => handleDifficultyClick("easy")}
-              >
+              <button type="button" className={`flag-button easy ${selectedDifficulty === "easy" ? "selected" : ""}`} onClick={() => handleDifficultyClick("easy")}>
                 Easy
               </button>
-              <button
-                type="button"
-                className={`flag-button medium ${selectedDifficulty === "medium" ? "selected" : ""}`}
-                onClick={() => handleDifficultyClick("medium")}
-              >
+              <button type="button" className={`flag-button medium ${selectedDifficulty === "medium" ? "selected" : ""}`} onClick={() => handleDifficultyClick("medium")}>
                 Medium
               </button>
-              <button
-                type="button"
-                className={`flag-button hard ${selectedDifficulty === "hard" ? "selected" : ""}`}
-                onClick={() => handleDifficultyClick("hard")}
-              >
+              <button type="button" className={`flag-button hard ${selectedDifficulty === "hard" ? "selected" : ""}`} onClick={() => handleDifficultyClick("hard")}>
                 Difficult
               </button>
             </div>

@@ -9,6 +9,8 @@ import random
 import datetime
 from enum import Enum
 from fastapi.middleware.cors import CORSMiddleware
+from youtube_transcript_api import YouTubeTranscriptApi
+from app.utils import extract_text_from_pdf, extract_video_id
 from dotenv import load_dotenv
 
 # ✅ Load environment variables
@@ -49,12 +51,87 @@ class DifficultyLevel(str, Enum):
     hard = "Hard"
 
 
-def extract_text_from_pdf(pdf_path):
-    """Extract text from a PDF file."""
-    doc = fitz.open(pdf_path)
-    text = "\n".join([page.get_text("text") for page in doc])
-    return text
+# from pdf2image import convert_from_path
+# import pytesseract
 
+# def extract_text_with_ocr(pdf_path):
+#     doc = fitz.open(pdf_path)
+#     text = ""
+#     for i, page in enumerate(doc):
+#         pix = page.get_pixmap(dpi=300)
+#         image_path = f"page_{i+1}.png"
+#         pix.save(image_path)
+
+#         ocr_text = pytesseract.image_to_string(image_path)
+#         print(f"[OCR] Page {i+1} text: {ocr_text[:100]}...")
+#         text += ocr_text + "\n"
+
+#         os.remove(image_path)  # Clean up temp image file
+
+#     return text
+ # Utility functions
+
+# Unified content generation function (Handles both PDF and YouTube)
+def generate_notes_from_youtube(video_url: str):
+    video_id = extract_video_id(video_url)
+    if not video_id:
+        raise HTTPException(status_code=400, detail="Invalid YouTube URL.")
+
+    try:
+        transcript = YouTubeTranscriptApi.get_transcript(video_id)
+        transcript_text = " ".join([entry["text"] for entry in transcript])
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching transcript: {str(e)}")
+
+    model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
+    prompt = f"Summarize the following transcript into concise key notes:\n\n{transcript_text}"
+    
+    response = model.generate_content(prompt)
+    return response.text.strip() if response.text else ""
+
+@app.post("/generate-content")
+async def generate_content(file: UploadFile = None, link: str = None):
+    if file:
+        pdf_path = Path(f"uploads/{file.filename}")
+        with pdf_path.open("wb") as buffer:
+            buffer.write(file.file.read())
+
+        extracted_text = extract_text_from_pdf(pdf_path)
+        if not extracted_text.strip():
+            raise HTTPException(status_code=400, detail="No text found in the uploaded PDF.")
+
+    elif link:
+        extracted_text = generate_notes_from_youtube(link)
+        if not extracted_text.strip():
+            raise HTTPException(status_code=400, detail="Failed to extract notes from YouTube video.")
+    else:
+        raise HTTPException(status_code=400, detail="Either file or link must be provided.")
+
+    # Decide between quiz or flashcards
+    is_flashcard = (file and file.filename.endswith(".pdf")) or ("flashcard" in (link or "").lower())
+
+    if is_flashcard:
+        flashcards = generate_flashcards_from_text(extracted_text)
+        return {"flashcards": flashcards}
+    else:
+        quiz = generate_mcqs_from_text(extracted_text)
+        return {"questions": quiz}
+
+
+def call_gemini_for_flashcards(text, num_flashcards=5):
+    model = genai.GenerativeModel("gemini-1.5-pro-latest")
+    prompt = f"""Generate {num_flashcards} simple flashcards from the following text:
+    
+{text}
+
+Each flashcard should be in the format:
+Q: <question or prompt>
+A: <answer or explanation>
+
+Output only the flashcards, separated by double newlines.
+"""
+    response = model.generate_content(prompt)
+    return response.text
 
 def call_gemini_for_mcqs(text, num_questions):
     """Use Gemini to generate MCQs from extracted text."""
@@ -79,22 +156,33 @@ def generate_mcqs_from_text(text, num_questions=5):
 
 
 def generate_flashcards_from_text(text, num_flashcards=5):
-    """Generate simple flashcards from extracted text."""
-    sentences = text.split(". ")
-    flashcards = []
-    existing_count = len(flashcards_db.get("latest", []))  # Ensure unique IDs
+    print(f"[DEBUG] Calling Gemini for {num_flashcards} flashcards...")
+    if not text.strip():
+        print("❌ No text found in the PDF!")
+        return []
 
-    for i in range(min(num_flashcards, len(sentences))):
-        sentence = random.choice(sentences)
-        sentences.remove(sentence)
-        flashcards.append({
-            "id": existing_count + i + 1,  # ✅ Unique IDs
-            "content": sentence.strip(),
-            "next_review": None,
-            "easiness_streak": 0
-        })
+    response = call_gemini_for_flashcards(text, num_flashcards)
+    print(f"[DEBUG] Gemini raw response:\n{response}\n")  # Add this line to inspect format
+
+    flashcards = []
+    existing_count = len(flashcards_db.get("latest", []))
+
+    blocks = response.strip().split("\n\n")  # Separate by paragraph
+    for i, block in enumerate(blocks):
+        if "Q:" in block and "A:" in block:
+            lines = block.strip().split("\n")
+            question = lines[0].replace("Q:", "").strip()
+            answer = lines[1].replace("A:", "").strip()
+            flashcards.append({
+                "id": existing_count + i + 1,
+                "question": question,
+                "answer": answer,
+                "next_review": None,
+                "easiness_streak": 0
+            })
 
     return flashcards
+
 
 
 @app.post("/upload-pdf")

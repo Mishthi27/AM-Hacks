@@ -1,13 +1,13 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import Options from "./Option";
 
-class Question extends Component{
+class Question extends Component {
     render() {
-        const {question, selectedOption, onOptionChange, onSubmit} = this.props;
+        const { question, selectedOption, onOptionChange, onSubmit } = this.props;
 
-        return(
-            <div className="">
-                <h3>Question {question.id}</h3>
+        return (
+            <div className="question-container">
+                <h3>Question</h3>
                 <h5 className="mt-2">{question.question}</h5>
                 <form onSubmit={onSubmit} className="mt-2 mb-2">
                     <Options
@@ -16,12 +16,11 @@ class Question extends Component{
                         onOptionChange={onOptionChange}
                     />
                     <button type="submit" className="btn btn-primary mt-2">
-                        SUBMIT
+                        NEXT
                     </button>
                 </form>
-                
             </div>
-        )
+        );
     }
 }
 

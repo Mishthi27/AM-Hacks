@@ -65,6 +65,7 @@ const handleDeleteSubject = (subjectToDelete) => {
 
  //Whatsapp Reminders
  const [showWhatsAppPopup, setShowWhatsAppPopup] = useState(false);
+ const [whatsAppStep, setWhatsAppStep] = useState(1);
  const [phoneNumber, setPhoneNumber] = useState("");
  const fullPhoneNumber = "+91" + phoneNumber;
 
@@ -263,7 +264,10 @@ const handleDeleteSubject = (subjectToDelete) => {
             <Button
               variant="success"
               className="mt-2"
-              onClick={() => setShowWhatsAppPopup(true)}
+              onClick={() => {
+                setShowWhatsAppPopup(true);
+                setWhatsAppStep(1); 
+              }}
             >
               Receive Reminders on WhatsApp 📲
             </Button>
@@ -275,7 +279,30 @@ const handleDeleteSubject = (subjectToDelete) => {
               <Modal.Header closeButton>
                 <Modal.Title>Subscribe to WhatsApp Reminders</Modal.Title>
               </Modal.Header>
-              <Modal.Body>
+
+              <Modal.Body> 
+              {whatsAppStep === 1 ? (
+                <>
+                  <p>
+                    To receive reminders from <strong>RetentionX</strong> on WhatsApp, follow these steps:
+                  </p>
+                  <ol>
+                    <li>Save the Twilio WhatsApp number: <strong>+1 415 523 8886</strong></li>
+                    <li>Open WhatsApp and send the following code to the number:</li>
+                  </ol>
+
+                  <div className="text-center my-3">
+                    <h5 className="border p-3 rounded bg-light">
+                      <code>join using-zulu</code>
+                    </h5>
+                  </div>
+
+                  <p>
+                    Once you've sent the message, click "Next" to continue.
+                  </p>
+                </>
+              ) : (
+                <>
                 <Form>
                   <Form.Group controlId="whatsappNumber">
                     <Form.Label>Enter your WhatsApp number</Form.Label>
@@ -289,17 +316,32 @@ const handleDeleteSubject = (subjectToDelete) => {
                     />
                   </Form.Group>
                 </Form>
-              </Modal.Body>
+              </>
+              )}
+            </Modal.Body>
               <Modal.Footer>
                 <Button
                   variant="secondary"
-                  onClick={() => setShowWhatsAppPopup(false)}
+                  onClick={() => {
+                    if (whatsAppStep === 1) {
+                      setShowWhatsAppPopup(false); 
+                    } else {
+                      setWhatsAppStep(1); 
+                    }
+                  }}
                 >
-                  Cancel
+                {whatsAppStep === 1 ? "Cancel" : "Back"}
                 </Button>
-                <Button variant="primary" onClick={handleWhatsAppSubscribe}>
-                  Subscribe
-                </Button>
+
+    {whatsAppStep === 1 ? (
+      <Button variant="primary" onClick={() => setWhatsAppStep(2)}>
+        Next
+      </Button>
+    ) : (
+      <Button variant="primary" onClick={handleWhatsAppSubscribe}>
+        Subscribe
+      </Button>
+    )}
               </Modal.Footer>
             </Modal>
 

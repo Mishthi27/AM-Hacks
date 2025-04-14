@@ -60,7 +60,7 @@ const UploadPage = () => {
             setMessage("Uploading PDF...");
             setProgress(30);
     
-            const uploadRes = await fetch("backend deployed: https://devcation.onrender.com/upload-pdf", {
+            const uploadRes = await fetch("https://devcation.onrender.com/upload-pdf", {
                 method: "POST",
                 body: formData,
             });

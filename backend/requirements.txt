@@ -17,3 +17,4 @@ python-multipart
 passlib[bcrypt]
 pydantic
 pydantic[email]
+motor

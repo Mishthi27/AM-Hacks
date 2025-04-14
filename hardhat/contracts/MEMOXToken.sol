@@ -10,4 +10,10 @@ contract MEMOXToken is ERC20 {
     function mint(address to, uint256 amount) public {
         _mint(to, amount);
     }
+    function redeemCredits() public {
+    uint256 balance = balanceOf(msg.sender);
+    require(balance > 0, "No tokens to redeem");
+    _burn(msg.sender, balance);
+    }
+
 }

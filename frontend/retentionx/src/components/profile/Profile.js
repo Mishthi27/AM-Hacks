@@ -87,7 +87,7 @@ const Profile = () => {
       );
 
       // Assuming a function redeem() in your smart contract
-      const tx = await tokenContract.redeemCredits(account, ethers.parseUnits(balance, 18));
+      const tx = await tokenContract.redeemCredits();
       await tx.wait(); // Wait for the transaction to be mined
       alert("Credits redeemed successfully!");
 

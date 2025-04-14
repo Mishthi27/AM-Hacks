@@ -60,7 +60,7 @@ const UploadPage = () => {
             setMessage("Uploading PDF...");
             setProgress(30);
     
-            const uploadRes = await fetch("http://localhost:8000/upload-pdf", {
+            const uploadRes = await fetch("backend deployed: https://devcation.onrender.com/upload-pdf", {
                 method: "POST",
                 body: formData,
             });
@@ -75,7 +75,7 @@ const UploadPage = () => {
     
             // Step 2: Generate Flashcards
             setMessage("Generating flashcards...");
-            const generateFlashcardsRes = await fetch("http://localhost:8000/generate-flashcards", {
+            const generateFlashcardsRes = await fetch("https://devcation.onrender.com/generate-flashcards", {
                 method: "POST",
             });
             if (!generateFlashcardsRes.ok) throw new Error("Failed to generate flashcards.");
@@ -83,7 +83,7 @@ const UploadPage = () => {
     
             // Step 3: Fetch Flashcards
             setMessage("Fetching flashcards...");
-            const flashcardRes = await fetch("http://localhost:8000/get-flashcards");
+            const flashcardRes = await fetch("https://devcation.onrender.com/get-flashcards");
             const flashcardData = await flashcardRes.json();
             if (!flashcardRes.ok || !flashcardData.flashcards) throw new Error("Flashcard generation failed.");
             const generatedFlashcards = flashcardData.flashcards;
@@ -123,7 +123,7 @@ const UploadPage = () => {
             setMessage("Processing YouTube link...");
             setProgress(30);
     
-            const res = await fetch("http://localhost:8000/generate-content", {
+            const res = await fetch("https://devcation.onrender.com/generate-content", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -134,7 +134,7 @@ const UploadPage = () => {
             if (!res.ok) throw new Error("Failed to process YouTube link.");
     
             setProgress(60);
-            const flashcardRes = await fetch("http://localhost:8000/get-flashcards");
+            const flashcardRes = await fetch("https://devcation.onrender.com/get-flashcards");
             const flashcardData = await flashcardRes.json();
     
             if (!flashcardRes.ok || !flashcardData.flashcards) {

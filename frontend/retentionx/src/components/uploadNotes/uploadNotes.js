@@ -79,29 +79,34 @@ const UploadPage = () => {
             setFlashcards(generatedFlashcards);
             localStorage.setItem("flashcards", JSON.stringify(generatedFlashcards));
     
-            // 🚀 Generate Quiz
-            setMessage("Generating quiz...");
-            const quizGenRes = await fetch("https://devcation.onrender.com/generate-quiz", { method: "POST" });
-            if (!quizGenRes.ok) throw new Error("Failed to generate quiz.");
-    
-            // 🎯 Fetch Quiz
-            setMessage("Fetching quiz...");
-            const quizRes = await fetch("https://devcation.onrender.com/get-quiz");
-            const quizData = await quizRes.json();
-            if (!quizRes.ok || !quizData.quiz) throw new Error("Failed to retrieve quiz.");
-    
-            localStorage.setItem("quiz", JSON.stringify(quizData.quiz));
-    
-            const newFile = { name: selectedFile.name, tag };
-            const newFiles = [...uploadedFiles, newFile];
-            setUploadedFiles(newFiles);
-            localStorage.setItem("uploadedFiles", JSON.stringify(newFiles));
-    
-            const storedSubjects = JSON.parse(localStorage.getItem("subjects")) || [];
-            if (!storedSubjects.includes(tag)) {
-                const updatedSubjects = [...storedSubjects, tag];
-                localStorage.setItem("subjects", JSON.stringify(updatedSubjects));
-            }
+        //     // 🚀 Generate Quiz
+        //     setMessage("Generating quiz...");
+        // const quizGenRes = await fetch("https://devcation.onrender.com/generate-quiz", { method: "POST" });
+        // if (!quizGenRes.ok) throw new Error("Failed to generate quiz.");
+
+        // // 🎯 Fetch Quiz
+        // setMessage("Fetching quiz...");
+        // const quizRes = await fetch("https://devcation.onrender.com/get-quiz");
+        // const quizData = await quizRes.json();
+        // if (!quizRes.ok || !quizData.quiz) throw new Error("Failed to retrieve quiz.");
+
+        // localStorage.setItem("quiz", JSON.stringify(quizData.quiz));
+
+        // const newFile = {
+        //     name: selectedFile.name,
+        //     tag,
+        //     quiz: quizData.quiz // 💡 Store quiz along with file object
+        // };
+
+        const newFiles = [...uploadedFiles, newFile];
+        setUploadedFiles(newFiles);
+        localStorage.setItem("uploadedFiles", JSON.stringify(newFiles));
+
+        const storedSubjects = JSON.parse(localStorage.getItem("subjects")) || [];
+        if (!storedSubjects.includes(tag)) {
+            const updatedSubjects = [...storedSubjects, tag];
+            localStorage.setItem("subjects", JSON.stringify(updatedSubjects));
+        }
     
             setProgress(100);
             setShowToast(true);

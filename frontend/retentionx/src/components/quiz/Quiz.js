@@ -16,7 +16,7 @@ const Quiz = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await fetch("http://localhost:8000/get-quiz");
+        const response = await fetch("https://devcation.onrender.com/get-quiz");
         const data = await response.json();
         console.log("Fetched questions:", data); // Debugging log
         setQuestionBank(data.questions || []); // Extracting the array

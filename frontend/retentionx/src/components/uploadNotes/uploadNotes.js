@@ -52,6 +52,10 @@ const UploadPage = () => {
         formData.append("file", selectedFile);
         formData.append("tag", tag);
     
+        console.log("Uploading file with the following data:");
+        console.log("File name: ", selectedFile.name);
+        console.log("Tag: ", tag);
+    
         try {
             setMessage("Uploading PDF...");
             setProgress(30);
@@ -61,64 +65,53 @@ const UploadPage = () => {
                 body: formData,
             });
     
+            console.log("Upload response status: ", uploadRes.status);
+    
             const uploadResData = await uploadRes.json();
+            console.log(uploadResData);
+    
             if (!uploadRes.ok) throw new Error("Failed to upload PDF.");
             setProgress(50);
     
+            // Step 2: Generate Flashcards
             setMessage("Generating flashcards...");
             const generateFlashcardsRes = await fetch("https://devcation.onrender.com/generate-flashcards", {
                 method: "POST",
             });
             if (!generateFlashcardsRes.ok) throw new Error("Failed to generate flashcards.");
-            setProgress(65);
+            setProgress(75);
     
+            // Step 3: Fetch Flashcards
+            setMessage("Fetching flashcards...");
             const flashcardRes = await fetch("https://devcation.onrender.com/get-flashcards");
             const flashcardData = await flashcardRes.json();
             if (!flashcardRes.ok || !flashcardData.flashcards) throw new Error("Flashcard generation failed.");
             const generatedFlashcards = flashcardData.flashcards;
-            setFlashcards(generatedFlashcards);
             localStorage.setItem("flashcards", JSON.stringify(generatedFlashcards));
+            setFlashcards(generatedFlashcards);
     
-        //     // 🚀 Generate Quiz
-        //     setMessage("Generating quiz...");
-        // const quizGenRes = await fetch("https://devcation.onrender.com/generate-quiz", { method: "POST" });
-        // if (!quizGenRes.ok) throw new Error("Failed to generate quiz.");
-
-        // // 🎯 Fetch Quiz
-        // setMessage("Fetching quiz...");
-        // const quizRes = await fetch("https://devcation.onrender.com/get-quiz");
-        // const quizData = await quizRes.json();
-        // if (!quizRes.ok || !quizData.quiz) throw new Error("Failed to retrieve quiz.");
-
-        // localStorage.setItem("quiz", JSON.stringify(quizData.quiz));
-
-        // const newFile = {
-        //     name: selectedFile.name,
-        //     tag,
-        //     quiz: quizData.quiz // 💡 Store quiz along with file object
-        // };
-
-        const newFiles = [...uploadedFiles, newFile];
-        setUploadedFiles(newFiles);
-        localStorage.setItem("uploadedFiles", JSON.stringify(newFiles));
-
-        const storedSubjects = JSON.parse(localStorage.getItem("subjects")) || [];
-        if (!storedSubjects.includes(tag)) {
-            const updatedSubjects = [...storedSubjects, tag];
-            localStorage.setItem("subjects", JSON.stringify(updatedSubjects));
-        }
+            const newFile = { name: selectedFile.name, tag };
+            const newFiles = [...uploadedFiles, newFile];
+            setUploadedFiles(newFiles);
+            localStorage.setItem("uploadedFiles", JSON.stringify(newFiles));
+    
+            const storedSubjects = JSON.parse(localStorage.getItem("subjects")) || [];
+            if (!storedSubjects.includes(tag)) {
+                const updatedSubjects = [...storedSubjects, tag];
+                localStorage.setItem("subjects", JSON.stringify(updatedSubjects));
+            }
     
             setProgress(100);
             setShowToast(true);
             setShowModal(false);
             setTag("");
-            setMessage("");
     
         } catch (error) {
             console.error("Error during upload flow:", error);
             setMessage(`Upload failed: ${error.message}`);
         }
     };    
+                
             
 
     const handleYoutubeUpload = async () => {

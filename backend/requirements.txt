@@ -10,4 +10,4 @@ nltk
 pytesseract 
 pdf2image 
 pillow
-fitz
+PyMuPDF

@@ -70,7 +70,7 @@ const handleDeleteSubject = (subjectToDelete) => {
  const fullPhoneNumber = "+91" + phoneNumber;
 
  const handleWhatsAppSubscribe = async () => {
-   const response = await fetch("http://localhost:3001/send-whatsapp", {
+   const response = await fetch("https://devcation-64ta.onrender.com/send-whatsapp", {
      method: "POST",
      headers: {
        "Content-Type": "application/json",
